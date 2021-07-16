@@ -1,0 +1,42 @@
+[
+  {
+    "time": 5,
+    "desc": "Get ready..."
+  },
+  {
+    "time": 20,
+    "desc": "Jab Cross"
+  },
+  {
+    "time": 10,
+    "desc": "Rest"
+  },
+  {
+    "time": 20,
+    "desc": "Cross Hook"
+  },
+  {
+    "time": 10,
+    "desc": "Rest"
+  },
+  {
+    "time": 20,
+    "desc": "Jab Cross Hook"
+  },
+  {
+    "time": 10,
+    "desc": "Rest"
+  },
+  {
+    "time": 20,
+    "desc": "Jab Cross Hook Cross"
+  },
+  {
+    "time": 10,
+    "desc": "Rest"
+  },
+  {
+    "time": 20,
+    "desc": "Hook Cross Hook"
+  }
+]
