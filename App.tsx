@@ -16,6 +16,8 @@ import {
 import { Spacer, Gap, Button } from "./src/ui";
 
 import bursts from "./src/data/bursts.json";
+import toneAudio from "./src/assets/tone.mp3";
+import tadaAudio from "./src/assets/tada.mp3";
 
 export default function App() {
   const [timerKey, setTimerKey] = React.useState<number>(0);
@@ -27,14 +29,15 @@ export default function App() {
 
   const handleComplete = (): void | [boolean, number] => {
     let returnTuple;
-    playSound();
     setCounter((prev) => {
       if (prev < routine.length - 1) {
+        playSound();
         setTimerKey((prev) => prev + 1);
         returnTuple = [true, routine[prev + 1].time];
         return prev + 1;
       } else {
         restart();
+        playSound(true);
         returnTuple = [false, 0];
         return 0;
       }
@@ -56,10 +59,10 @@ export default function App() {
     setHasStarted(false);
   };
 
-  async function playSound() {
+  async function playSound(lastTimer = false) {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("./src/assets/tone.mp3")
+      lastTimer ? tadaAudio : toneAudio
     );
     setSound(sound);
 
