@@ -9,5 +9,6 @@ type RootStackParamList = {
   // Admin: { screen: keyof typeof Admin };
 };
 
+export type footerComponentProp = StackNavigationProp<RootStackParamList>;
 export type homeScreenProp = StackNavigationProp<RootStackParamList, "Home">;
 export type adminScreenProp = StackNavigationProp<RootStackParamList, "Admin">;
