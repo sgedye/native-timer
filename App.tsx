@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Audio } from "expo-av";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import {
   StyleSheet,
@@ -20,27 +21,24 @@ export default function App() {
   const [timerKey, setTimerKey] = React.useState<number>(0);
   const [counter, setCounter] = React.useState<number>(0);
   const [routine, setRoutine] = React.useState(bursts);
-  const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [hasStarted, setHasStarted] = React.useState<boolean>(false);
   const [sound, setSound] = React.useState<Audio.Sound | null>(null);
 
   const handleComplete = (): void | [boolean, number] => {
     let returnTuple;
-    console.log("finished", counter, routine[counter].desc);
-
+    playSound();
     setCounter((prev) => {
       if (prev < routine.length - 1) {
+        setTimerKey((prev) => prev + 1);
         returnTuple = [true, routine[prev + 1].time];
         return prev + 1;
       } else {
-        setCounter(0);
-        setIsPlaying(false);
+        restart();
         returnTuple = [false, 0];
         return 0;
       }
     });
-    playSound();
-    setTimerKey((prev) => prev + 1);
     return returnTuple;
   };
 
@@ -87,14 +85,16 @@ export default function App() {
 
   return (
     <SafeAreaView style={[styles.container, bgStyles]}>
+      <ExpoStatusBar style="auto" />
       <View style={styles.h35}>
         <CountdownCircleTimer
           key={timerKey}
           isPlaying={isPlaying}
           duration={routine[counter].time}
           colors={[
-            ["#004777", 0.4],
-            ["#F7B801", 0.4],
+            ["#004777", 0.3],
+            ["#009e00", 0.3],
+            ["#F7B801", 0.2],
             ["#A30000", 0.2],
           ]}
           strokeWidth={15}
@@ -113,9 +113,19 @@ export default function App() {
       <View style={styles.h50}>
         {hasStarted &&
           routine[counter].desc.split(" ").map((part, idx) => (
-            <Text key={idx} style={styles.description}>
-              {part}
-            </Text>
+            <View key={idx}>
+              <Text style={styles.description}>{part}</Text>
+              {part === "Rest" && (
+                <>
+                  <Spacer />
+                  <Text style={styles.nextUp}>Next up:</Text>
+                  <Spacer height={4} />
+                  <Text style={[styles.nextUp, { fontWeight: "bold" }]}>
+                    {routine[counter + 1]?.desc}
+                  </Text>
+                </>
+              )}
+            </View>
           ))}
       </View>
       <View style={[styles.h15, styles.flexRow]}>
@@ -147,6 +157,22 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
+  h15: {
+    flex: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  h35: {
+    flex: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+  },
+  h50: {
+    flex: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   flexRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -155,6 +181,10 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 50,
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  nextUp: {
+    fontSize: 30,
     textAlign: "center",
   },
   button: {
@@ -172,21 +202,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
-  },
-  h15: {
-    flex: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  h35: {
-    flex: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-  },
-  h50: {
-    flex: 50,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

@@ -1,5 +1,10 @@
 import React from "react";
-import { StyleSheet, Pressable, Text } from "react-native";
+import {
+  StyleSheet,
+  // TouchableNativeFeedback,
+  Text,
+  Pressable,
+} from "react-native";
 
 interface ButtonProps {
   btnSize?: "sm" | "md" | "lg";
@@ -48,7 +53,7 @@ export const Button: React.FC<ButtonProps> = ({
   });
 
   return (
-    <Pressable style={styles.button} onPress={handlePress} disabled={disabled}>
+    <Pressable onPress={handlePress} style={styles.button} disabled={disabled}>
       {children ? (
         children
       ) : (
