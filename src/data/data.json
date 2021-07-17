@@ -1,0 +1,89 @@
+[
+  {
+    "name": "bursts",
+    "data": [
+      {
+        "time": 5,
+        "desc": "Get ready..."
+      },
+      {
+        "time": 20,
+        "desc": "Jab Cross"
+      },
+      {
+        "time": 10,
+        "desc": "Rest"
+      },
+      {
+        "time": 20,
+        "desc": "Cross Hook"
+      },
+      {
+        "time": 10,
+        "desc": "Rest"
+      },
+      {
+        "time": 20,
+        "desc": "Jab Cross Hook"
+      },
+      {
+        "time": 10,
+        "desc": "Rest"
+      },
+      {
+        "time": 20,
+        "desc": "Jab Cross Hook Cross"
+      },
+      {
+        "time": 10,
+        "desc": "Rest"
+      },
+      {
+        "time": 20,
+        "desc": "Hook Cross Hook"
+      }
+    ]
+  },
+  {
+    "name": "test",
+    "data": [
+      {
+        "time": 5,
+        "desc": "Get ready..."
+      },
+      {
+        "time": 15,
+        "desc": "A"
+      },
+      {
+        "time": 8,
+        "desc": "Rest"
+      },
+      {
+        "time": 15,
+        "desc": "B"
+      }
+    ]
+  },
+  {
+    "name": "abucus",
+    "data": [
+      {
+        "time": 5,
+        "desc": "Get ready..."
+      },
+      {
+        "time": 2,
+        "desc": "asdfsdfsf"
+      },
+      {
+        "time": 8,
+        "desc": "Rest"
+      },
+      {
+        "time": 21,
+        "desc": "12938723981273"
+      }
+    ]
+  }
+]
