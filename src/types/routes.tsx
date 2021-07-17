@@ -1,19 +1,15 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 
-// import { Home, Admin } from "../pages";
-
-type RootStackParamList = {
+export type RootStackParamList = {
   Home: undefined;
   Admin: undefined;
-  AddEditTimerGroup: undefined;
-  // Home: { screen: keyof typeof Home };
-  // Admin: { screen: keyof typeof Admin };
+  AddEditTimerGroup: { id: string } | undefined;
 };
 
-export type footerComponentProp = StackNavigationProp<RootStackParamList>;
-export type homeScreenProp = StackNavigationProp<RootStackParamList, "Home">;
-export type adminScreenProp = StackNavigationProp<RootStackParamList, "Admin">;
-export type addEditTimerGroupScreenProp = StackNavigationProp<
+export type FooterComponentProp = StackNavigationProp<RootStackParamList>;
+export type HomeScreenProp = StackNavigationProp<RootStackParamList, "Home">;
+export type AdminScreenProp = StackNavigationProp<RootStackParamList, "Admin">;
+export type AddEditTimerGroupScreenProp = StackNavigationProp<
   RootStackParamList,
   "AddEditTimerGroup"
 >;

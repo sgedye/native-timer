@@ -5,8 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Home, Admin, AddEditTimerGroup } from "./src/pages";
 
 import data from "./src/data/data.json";
+import { RootStackParamList } from "./src/types";
 
-const { Navigator, Screen } = createStackNavigator();
+const { Navigator, Screen } = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   const storeData = async (data: any) => {

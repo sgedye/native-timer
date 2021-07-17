@@ -3,14 +3,38 @@ import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Gap } from ".";
 
-export const DataInput: React.FC<{}> = () => (
+interface DataInputProps {
+  id?: string;
+  time?: number | string;
+  description?: string;
+  handleSetTime: (time: string) => void;
+  handleSetDescription: (description: string) => void;
+}
+
+export const DataInput: React.FC<DataInputProps> = ({
+  id,
+  time,
+  description,
+  handleSetTime,
+  handleSetDescription,
+}) => (
   <View style={styles.container}>
     <View style={styles.row}>
       <View style={styles.col20}>
-        <TextInput style={styles.input} placeholder="Time"></TextInput>
+        <TextInput
+          style={styles.input}
+          placeholder="Time"
+          value={`${time}`}
+          onChangeText={(time) => handleSetTime(time)}
+        ></TextInput>
       </View>
       <View style={styles.col65}>
-        <TextInput style={styles.input} placeholder="Description"></TextInput>
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={description}
+          onChangeText={(description) => handleSetDescription(description)}
+        ></TextInput>
       </View>
       <TouchableOpacity style={styles.col10}>
         <FontAwesome name="remove" size={20} color="firebrick" />

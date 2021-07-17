@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { adminScreenProp, Timer, TimerList } from "../types";
+import { AdminScreenProp, Timer, TimerList } from "../types";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -22,7 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Footer } from "../components";
 
 export const Admin: React.FC<Record<string, never>> = () => {
-  const navigation = useNavigation<adminScreenProp>();
+  const navigation = useNavigation<AdminScreenProp>();
 
   const [mode, setMode] = React.useState<Timer[] | null>(null);
   const [options, setOptions] = React.useState<TimerList[]>([]);
@@ -50,6 +50,9 @@ export const Admin: React.FC<Record<string, never>> = () => {
   };
 
   const editGroup = (id: string): void => {
+    navigation.navigate("AddEditTimerGroup", {
+      id,
+    });
     console.log(`Edit ID: ${id} selected`);
   };
 
@@ -57,7 +60,6 @@ export const Admin: React.FC<Record<string, never>> = () => {
     console.log(`Delete ID: ${id} selected`);
   };
 
-  console.log("options", options);
   return (
     <SafeAreaView style={styles.container}>
       <ExpoStatusBar style="auto" />
@@ -89,10 +91,7 @@ export const Admin: React.FC<Record<string, never>> = () => {
               handleDeleteGroup={(id) => deleteGroup(id)}
             />
           )}
-          keyExtractor={(item) => {
-            console.log(item);
-            return item.id;
-          }}
+          keyExtractor={(item) => item.id}
         />
       </View>
       <View style={styles.footer}>

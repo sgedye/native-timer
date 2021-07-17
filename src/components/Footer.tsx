@@ -2,10 +2,10 @@ import * as React from "react";
 import { Button, Gap } from "../ui";
 import { View, StyleSheet, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { footerComponentProp } from "../types";
+import { FooterComponentProp } from "../types";
 
 export const Footer: React.FC<Record<string, never>> = () => {
-  const navigation = useNavigation<footerComponentProp>();
+  const navigation = useNavigation<FooterComponentProp>();
   return (
     <View
       style={{

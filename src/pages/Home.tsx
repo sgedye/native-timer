@@ -4,7 +4,7 @@ import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import { useNavigation } from "@react-navigation/native";
-import { homeScreenProp } from "../types";
+import { HomeScreenProp } from "../types";
 
 import {
   StyleSheet,
@@ -33,7 +33,7 @@ export const Home: React.FC<Record<string, never>> = () => {
   const [hasStarted, setHasStarted] = React.useState<boolean>(false);
   const [sound, setSound] = React.useState<Audio.Sound | null>(null);
 
-  const navigation = useNavigation<homeScreenProp>();
+  const navigation = useNavigation<HomeScreenProp>();
 
   const handleComplete = (): void | [boolean, number] => {
     let returnTuple;
