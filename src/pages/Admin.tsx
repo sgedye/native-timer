@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { AdminScreenProp, Timer, TimerList } from "../types";
+import { AdminScreenProp, Timer, TimerGroup } from "../types";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -25,7 +25,7 @@ export const Admin: React.FC<Record<string, never>> = () => {
   const navigation = useNavigation<AdminScreenProp>();
 
   const [mode, setMode] = React.useState<Timer[] | null>(null);
-  const [options, setOptions] = React.useState<TimerList[]>([]);
+  const [options, setOptions] = React.useState<TimerGroup[]>([]);
   // const [timerList, setTimerList] = React.useState<Timer[]>([]);
 
   const deleteItem = (id: number) => {};

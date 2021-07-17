@@ -4,42 +4,52 @@
     "name": "bursts",
     "data": [
       {
+        "id": "1",
         "time": 5,
         "desc": "Get ready..."
       },
       {
+        "id": "2",
         "time": 20,
         "desc": "Jab Cross"
       },
       {
+        "id": "3",
         "time": 10,
         "desc": "Rest"
       },
       {
+        "id": "4",
         "time": 20,
         "desc": "Cross Hook"
       },
       {
+        "id": "5",
         "time": 10,
         "desc": "Rest"
       },
       {
+        "id": "6",
         "time": 20,
         "desc": "Jab Cross Hook"
       },
       {
+        "id": "7",
         "time": 10,
         "desc": "Rest"
       },
       {
+        "id": "8",
         "time": 20,
         "desc": "Jab Cross Hook Cross"
       },
       {
+        "id": "9",
         "time": 10,
         "desc": "Rest"
       },
       {
+        "id": "10",
         "time": 20,
         "desc": "Hook Cross Hook"
       }
@@ -50,18 +60,22 @@
     "name": "test",
     "data": [
       {
+        "id": "11",
         "time": 5,
         "desc": "Get ready..."
       },
       {
+        "id": "12",
         "time": 15,
         "desc": "A"
       },
       {
+        "id": "13",
         "time": 8,
         "desc": "Rest"
       },
       {
+        "id": "14",
         "time": 15,
         "desc": "B"
       }
@@ -72,18 +86,12 @@
     "name": "abucus",
     "data": [
       {
+        "id": "15",
         "time": 5,
         "desc": "Get ready..."
       },
       {
-        "time": 2,
-        "desc": "asdfsdfsf"
-      },
-      {
-        "time": 8,
-        "desc": "Rest"
-      },
-      {
+        "id": "18",
         "time": 21,
         "desc": "12938723981273"
       }
