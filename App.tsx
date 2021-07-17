@@ -2,7 +2,7 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Home, Admin, AddTimerGroup } from "./src/pages";
+import { Home, Admin, AddEditTimerGroup } from "./src/pages";
 
 import data from "./src/data/data.json";
 
@@ -27,7 +27,7 @@ export default function App() {
       <Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Screen name="Home" component={Home} />
         <Screen name="Admin" component={Admin} />
-        <Screen name="AddTimerGroup" component={AddTimerGroup} />
+        <Screen name="AddEditTimerGroup" component={AddEditTimerGroup} />
       </Navigator>
     </NavigationContainer>
   );

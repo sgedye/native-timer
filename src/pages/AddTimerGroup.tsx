@@ -13,7 +13,7 @@ import { v4 as uuid } from "uuid";
 import { useNavigation } from "@react-navigation/native";
 
 import {
-  addTimerGroupScreenProp,
+  addEditTimerGroupScreenProp,
   Timer,
   TimerGroup,
   TimerList,

@@ -45,6 +45,18 @@ export const Admin: React.FC<Record<string, never>> = () => {
     getData();
   }, []);
 
+  const selectGroup = (id: string): void => {
+    console.log(`ID: ${id} selected`);
+  };
+
+  const editGroup = (id: string): void => {
+    console.log(`Edit ID: ${id} selected`);
+  };
+
+  const deleteGroup = (id: string): void => {
+    console.log(`Delete ID: ${id} selected`);
+  };
+
   console.log("options", options);
   return (
     <SafeAreaView style={styles.container}>
@@ -55,7 +67,7 @@ export const Admin: React.FC<Record<string, never>> = () => {
       <View style={styles.body}>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.push("AddTimerGroup")}
+          onPress={() => navigation.push("AddEditTimerGroup")}
         >
           <FontAwesome
             name="plus"
@@ -68,7 +80,15 @@ export const Admin: React.FC<Record<string, never>> = () => {
         </TouchableOpacity>
         <FlatList
           data={options}
-          renderItem={({ item }) => <ListItem title={item.name} />}
+          renderItem={({ item }) => (
+            <ListItem
+              id={item.id}
+              title={item.name}
+              handleSelectGroup={(id) => selectGroup(id)}
+              handleEditGroup={(id) => editGroup(id)}
+              handleDeleteGroup={(id) => deleteGroup(id)}
+            />
+          )}
           keyExtractor={(item) => {
             console.log(item);
             return item.id;
