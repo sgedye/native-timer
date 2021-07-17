@@ -53,7 +53,10 @@ export const Admin: React.FC<Record<string, never>> = () => {
         <Text style={styles.headerText}>Select a new timer group</Text>
       </View>
       <View style={styles.body}>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.push("AddTimerGroup")}
+        >
           <FontAwesome
             name="plus"
             color="dodgerblue"

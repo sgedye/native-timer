@@ -5,6 +5,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 type RootStackParamList = {
   Home: undefined;
   Admin: undefined;
+  AddTimerGroup: undefined;
   // Home: { screen: keyof typeof Home };
   // Admin: { screen: keyof typeof Admin };
 };
@@ -12,3 +13,7 @@ type RootStackParamList = {
 export type footerComponentProp = StackNavigationProp<RootStackParamList>;
 export type homeScreenProp = StackNavigationProp<RootStackParamList, "Home">;
 export type adminScreenProp = StackNavigationProp<RootStackParamList, "Admin">;
+export type addTimerGroupScreenProp = StackNavigationProp<
+  RootStackParamList,
+  "AddTimerGroup"
+>;
