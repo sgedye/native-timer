@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
+  FlatList,
   StyleSheet,
 } from "react-native";
 
@@ -13,18 +14,19 @@ import { useNavigation } from "@react-navigation/native";
 import { adminScreenProp, Timer, TimerList } from "../types";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 
+import { uuid } from "uuidv4";
+
 import data from "../data/data.json";
+import { ListItem } from "../ui";
+import { TextInput } from "react-native-gesture-handler";
 
 export const Admin: React.FC<Record<string, never>> = () => {
-  const burstData = data[0].data;
-  const testData = data[1].data;
-
   const navigation = useNavigation<adminScreenProp>();
-  const [mode, setMode] = React.useState<Timer[]>(burstData);
+  const [mode, setMode] = React.useState<Timer[]>(data[0].data);
   const [options, setOptions] = React.useState<TimerList[]>(data || []);
   // const [timerList, setTimerList] = React.useState<Timer[]>([]);
 
-  console.log(mode);
+  const deleteItem = (id: number) => {};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,9 +36,11 @@ export const Admin: React.FC<Record<string, never>> = () => {
       </View>
       <View style={styles.section80}>
         <Button title="Login" onPress={() => navigation.navigate("Home")} />
-        {options.map(({ name }, idx) => (
-          <Text key={idx}>{name}</Text>
-        ))}
+
+        <FlatList
+          data={options}
+          renderItem={({ item }) => <ListItem title={item.name} />}
+        />
       </View>
     </SafeAreaView>
   );
