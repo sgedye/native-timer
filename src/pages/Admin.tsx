@@ -17,33 +17,22 @@ import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
 import { Gap, ListItem, Spacer } from "../ui";
-import { TextInput } from "react-native-gesture-handler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Footer } from "../components";
+
+import seedData from "../data/data.json";
+import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
 export const Admin: React.FC<Record<string, never>> = () => {
   const navigation = useNavigation<AdminScreenProp>();
+  const [data, setData] = useAsyncStorage<TimerGroup[]>("data", seedData);
 
   const [mode, setMode] = React.useState<Timer[] | null>(null);
-  const [options, setOptions] = React.useState<TimerGroup[]>([]);
-  // const [timerList, setTimerList] = React.useState<Timer[]>([]);
-
-  const deleteItem = (id: number) => {};
-
-  const getData = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("data");
-      const parsedJson = await JSON.parse(jsonValue || "[]");
-      setOptions(await parsedJson);
-      setMode((await parsedJson[0]?.data) || null);
-    } catch (e) {
-      console.log("Error Reading: ", e);
-    }
-  };
 
   React.useEffect(() => {
-    getData();
-  }, []);
+    if (!!data.length) {
+      setMode(data[0].data);
+    }
+  }, [data]);
 
   const selectGroup = (id: string): void => {
     console.log(`ID: ${id} selected`);
@@ -58,6 +47,7 @@ export const Admin: React.FC<Record<string, never>> = () => {
 
   const deleteGroup = (id: string): void => {
     console.log(`Delete ID: ${id} selected`);
+    setData((prev) => prev.filter((group) => group.id !== id));
   };
 
   return (
@@ -81,7 +71,7 @@ export const Admin: React.FC<Record<string, never>> = () => {
           <Text style={styles.addButtonText}>Add Group</Text>
         </TouchableOpacity>
         <FlatList
-          data={options}
+          data={data}
           renderItem={({ item }) => (
             <ListItem
               id={item.id}
