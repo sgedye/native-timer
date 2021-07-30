@@ -71,55 +71,22 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     );
   };
 
-  /*
+  // const setTime = (id: string, time: number) => {
+  //   console.log("setTime...: ", time, id);
+  //   // Take an id and number and set the timer data event time.
+  // };
 
-  const setTime = (id: string, time: number) => {
-    console.log("setTime...: ", time, id);
-    // Take an id and number and set the timer data event time.
-  };
-
-  const setDescription = (id: string, description: string) => {
-    const timerToUpdate = options.find((el) => el.id === id);
-    console.log(timerGroup);
-    console.log("timertoupdate", timerToUpdate);
-    // if (timerToUpdate) {
-    //   timerToUpdate.
-    // }
-    console.log("setDesc...", description, id);
-    // id: string, description: string
-    // Take an id and string and set the timer data event desc.
-  };
-
-*/
-
-  /*
-  const onAddTimerGroup = async () => {
-    if (!timerGroup!.name) {
-      // Make an alert - please enter name
-      return;
-    }
-
-    if (!timerGroup!.data[0].time || !timerGroup!.data[0].desc) {
-      // Make an alert - please enter name and data.
-      return;
-    }
-
-    // If routeId is null, add timerGroup to the list (new entry)
-    if (!routeId) {
-      AsyncStorage.setItem("sg_timer_data", JSON.stringify([...options, timerGroup]));
-    }
-    // If routeId is !null, timerGroup already exists, so replace it.
-    else {
-      const filteredOptions = options.filter((option) => option.id !== routeId);
-
-      // Write to local storage
-      AsyncStorage.setItem(
-        "sg_timer_data",
-        JSON.stringify([...filteredOptions, timerGroup])
-      );
-    }
-  };
-  */
+  // const setDescription = (id: string, description: string) => {
+  //   const timerToUpdate = data.find((el) => el.id === id);
+  //   console.log(timerGroup);
+  //   console.log("timertoupdate", timerToUpdate);
+  //   // if (timerToUpdate) {
+  //   //   timerToUpdate.
+  //   // }
+  //   console.log("setDesc...", description, id);
+  //   // id: string, description: string
+  //   // Take an id and string and set the timer data event desc.
+  // };
 
   const addDataRow = () => {
     const newId = uuid();
@@ -152,34 +119,39 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   };
 
   const persistChanges = () => {
-    if (timerGroup.timerGroupName) {
-      console.log(
-        "saving changes... naaaah, not really, well just groupName :P"
-      );
-
-      // Add new timerGroup - if timerGroupId not in data list.
-      const isNewTimer = !data.find(
-        ({ timerGroupId }) => timerGroupId === timerGroup.timerGroupId
-      );
-      if (isNewTimer) {
-        return setData((prev) => [...prev, timerGroup]);
-      }
-
-      // Update existing
-      const tempList = data.map((groupTimer) => {
-        if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
-          return { ...groupTimer, timerGroupName: timerGroup.timerGroupName };
-        }
-        return groupTimer;
-      });
-      return setData(tempList);
+    if (!timerGroup.timerGroupName) {
+      console.log("please enter a timerGroup name");
+      return;
     }
-    console.log("need to set a name");
-  };
 
-  if (!timerGroup) {
-    return null;
-  }
+    if (!timerGroup.timers.length) {
+      console.log("please enter at least 1 timer to your timer group");
+      return;
+    }
+
+    // All good -- save changes.
+    console.log(
+      "saving changes... naaaah, not really, well just groupName ATM :P"
+    );
+
+    // Add new timerGroup - if timerGroupId not in data list.
+    const isNewTimer = !data.find(
+      ({ timerGroupId }) => timerGroupId === timerGroup.timerGroupId
+    );
+
+    if (isNewTimer) {
+      return setData((prev) => [...prev, timerGroup]);
+    }
+
+    // Update existing
+    const tempList = data.map((groupTimer) => {
+      if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
+        return { ...groupTimer, timerGroupName: timerGroup.timerGroupName };
+      }
+      return groupTimer;
+    });
+    return setData(tempList);
+  };
 
   // Here timerGroup is always truthy, either edit with prefilled deets, or new with prefilled uuid.
 
@@ -224,7 +196,6 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
           ))}
         </View>
         <Spacer />
-        {/* <Button title="Add Timer Group" onPress={onAddTimerGroup} /> */}
         <Button title="Save Changes" onPress={persistChanges} />
       </View>
       <View style={styles.footer}>

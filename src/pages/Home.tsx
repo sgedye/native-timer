@@ -22,7 +22,6 @@ import { Spacer, Gap, Button } from "../ui";
 import seedData from "../data/data.json";
 import toneAudio from "../assets/tone.mp3";
 import tadaAudio from "../assets/tada.mp3";
-import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
 interface HomeProps {
   route?: any;
