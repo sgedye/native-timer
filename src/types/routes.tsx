@@ -1,9 +1,10 @@
 import { StackNavigationProp } from "@react-navigation/stack";
+import { TimerGroup } from "./baseTypes";
 
 export type RootStackParamList = {
-  Home: undefined;
+  Home: { timerGroup: TimerGroup } | undefined;
   Admin: undefined;
-  AddEditTimerGroup: { id: string } | undefined;
+  AddEditTimerGroup: { groupId: string } | undefined;
 };
 
 export type FooterComponentProp = StackNavigationProp<RootStackParamList>;

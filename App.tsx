@@ -10,18 +10,18 @@ import { RootStackParamList } from "./src/types";
 const { Navigator, Screen } = createStackNavigator<RootStackParamList>();
 
 export default function App() {
-  const storeData = async (data: any) => {
-    try {
-      await AsyncStorage.setItem("data", JSON.stringify(data));
-    } catch (e) {
-      console.log("Error: ", e);
-    }
-  };
+  // const storeData = async (data: any) => {
+  //   try {
+  //     await AsyncStorage.setItem("sg_timer_data", JSON.stringify(data));
+  //   } catch (e) {
+  //     console.log("Error: ", e);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    storeData(data);
-    console.log("storedDated");
-  }, []);
+  // React.useEffect(() => {
+  //   storeData(data);
+  //   console.log("storedDated");
+  // }, []);
 
   return (
     <NavigationContainer>

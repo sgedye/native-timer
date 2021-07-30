@@ -4,7 +4,7 @@ import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 import { useNavigation } from "@react-navigation/native";
-import { HomeScreenProp } from "../types";
+import { HomeScreenProp, Timer, TimerGroup } from "../types";
 
 import {
   StyleSheet,
@@ -19,29 +19,57 @@ import {
 
 import { Spacer, Gap, Button } from "../ui";
 
-import data from "../data/data.json";
+import seedData from "../data/data.json";
 import toneAudio from "../assets/tone.mp3";
 import tadaAudio from "../assets/tada.mp3";
+import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
-export const Home: React.FC<Record<string, never>> = () => {
-  const bursts = data[0].data;
+interface HomeProps {
+  route?: any;
+}
+
+export const Home: React.FC<HomeProps> = ({ route }) => {
+  const timerGroup: TimerGroup = route?.params?.timerGroup || seedData[0];
 
   const [timerKey, setTimerKey] = React.useState<number>(0);
   const [counter, setCounter] = React.useState<number>(0);
-  const [routine, setRoutine] = React.useState(bursts);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [hasStarted, setHasStarted] = React.useState<boolean>(false);
   const [sound, setSound] = React.useState<Audio.Sound | null>(null);
 
   const navigation = useNavigation<HomeScreenProp>();
 
+  // React.useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //         console.log("Unloading Sound");
+  //         sound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, [sound]);
+
+  if (!timerGroup?.timers.length) {
+    return (
+      <>
+        <Text>
+          Error, either timerGroup is falsy... or more likely... the timers
+          array is empty.
+        </Text>
+        <RNButton
+          title="Go to the admin"
+          onPress={() => navigation.navigate("Admin")}
+        />
+      </>
+    );
+  }
+
   const handleComplete = (): void | [boolean, number] => {
     let returnTuple;
     setCounter((prev) => {
-      if (prev < routine.length - 1) {
+      if (prev < timerGroup.timers.length - 1) {
         playSound();
         setTimerKey((prev) => prev + 1);
-        returnTuple = [true, routine[prev + 1].time];
+        returnTuple = [true, timerGroup.timers[prev + 1].time];
         return prev + 1;
       } else {
         restart();
@@ -74,23 +102,13 @@ export const Home: React.FC<Record<string, never>> = () => {
     );
     setSound(sound);
 
-    console.log("Playing Sound");
     await sound.playAsync();
   }
 
-  React.useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
   const bgStyles =
-    routine[counter]?.desc === "Get ready..."
+    timerGroup.timers[counter]?.desc === "Get ready..."
       ? { backgroundColor: "dodgerblue" }
-      : routine[counter]?.desc === "Rest"
+      : timerGroup.timers[counter]?.desc === "Rest"
       ? { backgroundColor: "#009e00" }
       : { backgroundColor: "#ff5c5c" };
 
@@ -101,7 +119,7 @@ export const Home: React.FC<Record<string, never>> = () => {
         <CountdownCircleTimer
           key={timerKey}
           isPlaying={isPlaying}
-          duration={routine[counter].time}
+          duration={timerGroup.timers[counter].time}
           colors={[
             ["#004777", 0.3],
             ["#009e00", 0.3],
@@ -123,7 +141,7 @@ export const Home: React.FC<Record<string, never>> = () => {
       </View>
       <View style={styles.section50}>
         {hasStarted ? (
-          routine[counter].desc.split(" ").map((part, idx) => (
+          timerGroup.timers[counter].desc.split(" ").map((part, idx) => (
             <View key={idx}>
               <Text style={styles.description}>{part}</Text>
               {part === "Rest" && (
@@ -132,7 +150,7 @@ export const Home: React.FC<Record<string, never>> = () => {
                   <Text style={styles.nextUp}>Next up:</Text>
                   <Spacer height={4} />
                   <Text style={[styles.nextUp, { fontWeight: "bold" }]}>
-                    {routine[counter + 1]?.desc}
+                    {timerGroup.timers[counter + 1]?.desc}
                   </Text>
                 </>
               )}

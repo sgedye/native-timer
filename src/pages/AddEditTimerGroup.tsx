@@ -10,15 +10,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { v4 as uuid } from "uuid";
-import { useNavigation } from "@react-navigation/native";
+
+import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
 import { AddEditTimerGroupScreenProp, Timer, TimerGroup } from "../types";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-gesture-handler";
 import { DataInput, Spacer } from "../ui";
 import { Footer } from "../components";
 import { FontAwesome } from "@expo/vector-icons";
+import seedData from "../data/data.json";
 
 interface AddEditTimerGroupProps {
   route: any;
@@ -29,65 +30,69 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   route,
   navigation,
 }) => {
-  console.log("route", route);
-  const routeId = route?.params?.id || null;
+  const routeId: string = route?.params?.groupId;
+
+  const [data, setData] = useAsyncStorage<TimerGroup[]>(
+    "sg_timer_data",
+    seedData
+  );
 
   const [timerGroup, setTimerGroup] = React.useState<TimerGroup | null>(null);
-  const [options, setOptions] = React.useState<TimerGroup[]>([]);
-
-  const getData = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("data");
-      if (jsonValue) {
-        setOptions(JSON.parse(jsonValue));
-        return JSON.parse(jsonValue);
-      }
-      setOptions([]);
-      return null;
-    } catch (e) {
-      console.log("Error Reading: ", e);
-    }
-  };
 
   React.useEffect(() => {
-    getData();
-  }, []);
-
-  React.useEffect(() => {
-    console.log(routeId);
-    console.log("opt len", options?.length);
-    if (routeId && !!options?.length) {
-      const editableGroup = options.find(({ id }) => id === routeId);
-      if (editableGroup) {
-        return setTimerGroup(editableGroup);
+    if (!!data.length && routeId) {
+      const currentGroup = data.find(
+        ({ timerGroupId }) => timerGroupId === routeId
+      );
+      if (currentGroup) {
+        return setTimerGroup(currentGroup);
       }
     }
-    // Always want to work with a timer group, so create one if it's add.
+
+    // Always want to work with a timer group, so create one if it's add timer group.
     setTimerGroup({
-      id: uuid(),
-      name: "",
-      data: [],
+      timerGroupId: uuid(),
+      timerGroupName: "",
+      timers: [],
     });
-  }, [options]);
+  }, [data, routeId]);
+
+  if (!timerGroup) {
+    return null;
+  }
 
   const setTitle = (title: string) => {
     setTimerGroup(
       (prev) =>
         ({
           ...prev,
-          name: title,
+          timerGroupName: title,
         } as TimerGroup)
     );
   };
-  const setTime = () => {
+
+  /*
+
+  const setTime = (id: string, time: number) => {
+    console.log("setTime...: ", time, id);
     // Take an id and number and set the timer data event time.
   };
 
-  const setDescription = () => {
+  const setDescription = (id: string, description: string) => {
+    const timerToUpdate = options.find((el) => el.id === id);
+    console.log(timerGroup);
+    console.log("timertoupdate", timerToUpdate);
+    // if (timerToUpdate) {
+    //   timerToUpdate.
+    // }
+    console.log("setDesc...", description, id);
     // id: string, description: string
     // Take an id and string and set the timer data event desc.
   };
 
+*/
+
+  /*
   const onAddTimerGroup = async () => {
     if (!timerGroup!.name) {
       // Make an alert - please enter name
@@ -101,7 +106,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
     // If routeId is null, add timerGroup to the list (new entry)
     if (!routeId) {
-      AsyncStorage.setItem("data", JSON.stringify([...options, timerGroup]));
+      AsyncStorage.setItem("sg_timer_data", JSON.stringify([...options, timerGroup]));
     }
     // If routeId is !null, timerGroup already exists, so replace it.
     else {
@@ -109,11 +114,12 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
       // Write to local storage
       AsyncStorage.setItem(
-        "data",
+        "sg_timer_data",
         JSON.stringify([...filteredOptions, timerGroup])
       );
     }
   };
+  */
 
   const addDataRow = () => {
     const newId = uuid();
@@ -121,13 +127,15 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       (prev) =>
         ({
           ...prev,
-          data: [...prev!.data, { id: newId, time: 5, desc: "" }],
+          timers: [...prev!.timers, { timerId: newId, time: 5, desc: "" }],
         } as TimerGroup)
     );
     return (
       <DataInput
-        handleSetTime={(time) => setTime()}
-        handleSetDescription={(description) => setDescription()}
+        // handleSetTime={(time) => setTime(newId, time)}
+        // handleSetDescription={(description) =>
+        //   setDescription(newId, description)
+        // }
         handleDeleteRow={() => deleteDataRow(newId)}
       />
     );
@@ -138,13 +146,35 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       (prev) =>
         ({
           ...prev,
-          data: prev?.data.filter((el) => el.id !== id),
+          timers: prev?.timers.filter((el) => el.timerId !== id),
         } as TimerGroup)
     );
   };
 
   const persistChanges = () => {
-    console.log("saving changes... naaaah, not really :P");
+    if (timerGroup.timerGroupName) {
+      console.log(
+        "saving changes... naaaah, not really, well just groupName :P"
+      );
+
+      // Add new timerGroup - if timerGroupId not in data list.
+      const isNewTimer = !data.find(
+        ({ timerGroupId }) => timerGroupId === timerGroup.timerGroupId
+      );
+      if (isNewTimer) {
+        return setData((prev) => [...prev, timerGroup]);
+      }
+
+      // Update existing
+      const tempList = data.map((groupTimer) => {
+        if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
+          return { ...groupTimer, timerGroupName: timerGroup.timerGroupName };
+        }
+        return groupTimer;
+      });
+      return setData(tempList);
+    }
+    console.log("need to set a name");
   };
 
   if (!timerGroup) {
@@ -158,7 +188,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       <ExpoStatusBar style="auto" />
       <View style={styles.header}>
         <Text style={styles.headerText}>
-          Add/Edit {timerGroup.name || "Timer Group"}
+          Add/Edit {timerGroup.timerGroupName || "Timer Group"}
         </Text>
       </View>
       <View style={styles.body}>
@@ -167,7 +197,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
           <TextInput
             style={styles.input}
             onChangeText={(title) => setTitle(title)}
-            value={timerGroup.name || ""}
+            value={timerGroup.timerGroupName || ""}
             placeholder="Timer group name"
           />
           <Spacer />
@@ -180,19 +210,21 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
               <FontAwesome name="plus" size={20} color="green" />
             </TouchableOpacity>
           </View>
-          {timerGroup.data.map(({ id, time, desc }) => (
+          {timerGroup.timers.map(({ timerId, time, desc }) => (
             <DataInput
-              key={id}
+              key={timerId}
               time={time}
               description={desc}
-              handleSetTime={(time) => setTime()}
-              handleSetDescription={(description) => setDescription()}
-              handleDeleteRow={() => deleteDataRow(id)}
+              // handleSetTime={(time) => setTime(id, time)}
+              // handleSetDescription={(description) =>
+              //   setDescription(id, description)
+              // }
+              handleDeleteRow={() => deleteDataRow(timerId)}
             />
           ))}
         </View>
         <Spacer />
-        <Button title="Add Timer Group" onPress={onAddTimerGroup} />
+        {/* <Button title="Add Timer Group" onPress={onAddTimerGroup} /> */}
         <Button title="Save Changes" onPress={persistChanges} />
       </View>
       <View style={styles.footer}>

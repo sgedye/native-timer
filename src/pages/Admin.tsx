@@ -24,30 +24,28 @@ import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
 export const Admin: React.FC<Record<string, never>> = () => {
   const navigation = useNavigation<AdminScreenProp>();
-  const [data, setData] = useAsyncStorage<TimerGroup[]>("data", seedData);
+  const [data, setData] = useAsyncStorage<TimerGroup[]>(
+    "sg_timer_data",
+    seedData
+  );
 
-  const [mode, setMode] = React.useState<Timer[] | null>(null);
+  const selectGroup = (groupId: string): void => {
+    const timerGroup = data.find(
+      ({ timerGroupId }) => timerGroupId === groupId
+    );
 
-  React.useEffect(() => {
-    if (!!data.length) {
-      setMode(data[0].data);
-    }
-  }, [data]);
-
-  const selectGroup = (id: string): void => {
-    console.log(`ID: ${id} selected`);
+    return navigation.navigate("Home", timerGroup ? { timerGroup } : undefined);
   };
 
-  const editGroup = (id: string): void => {
+  const editGroup = (groupId: string): void => {
     navigation.navigate("AddEditTimerGroup", {
-      id,
+      groupId,
     });
-    console.log(`Edit ID: ${id} selected`);
   };
 
-  const deleteGroup = (id: string): void => {
-    console.log(`Delete ID: ${id} selected`);
-    setData((prev) => prev.filter((group) => group.id !== id));
+  const deleteGroup = (groupId: string): void => {
+    console.log(`Delete ID: ${groupId} selected`);
+    setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
   };
 
   return (
@@ -74,14 +72,13 @@ export const Admin: React.FC<Record<string, never>> = () => {
           data={data}
           renderItem={({ item }) => (
             <ListItem
-              id={item.id}
-              title={item.name}
-              handleSelectGroup={(id) => selectGroup(id)}
-              handleEditGroup={(id) => editGroup(id)}
-              handleDeleteGroup={(id) => deleteGroup(id)}
+              title={item.timerGroupName}
+              handleSelectGroup={() => selectGroup(item.timerGroupId)}
+              handleEditGroup={() => editGroup(item.timerGroupId)}
+              handleDeleteGroup={() => deleteGroup(item.timerGroupId)}
             />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.timerGroupId}
         />
       </View>
       <View style={styles.footer}>
