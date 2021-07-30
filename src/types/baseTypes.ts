@@ -1,11 +1,11 @@
 export type TimerGroup = {
-  id: string;
-  name: string;
-  data: Timer[];
+  timerGroupId: string;
+  timerGroupName: string;
+  timers: Timer[];
 };
 
 export interface Timer {
-  id: string;
+  timerId: string;
   time: number;
   desc: string;
 }

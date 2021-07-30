@@ -3,15 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
 interface ListItemProps {
-  id: string;
   title: string;
-  handleSelectGroup: (id: string) => void;
-  handleEditGroup: (id: string) => void;
-  handleDeleteGroup: (id: string) => void;
+  handleSelectGroup: () => void;
+  handleEditGroup: () => void;
+  handleDeleteGroup: () => void;
 }
 
 export const ListItem: React.FC<ListItemProps> = ({
-  id,
   title,
   handleSelectGroup,
   handleEditGroup,
@@ -19,26 +17,17 @@ export const ListItem: React.FC<ListItemProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.listItem}
-        onPress={() => handleSelectGroup(id)}
-      >
+      <TouchableOpacity style={styles.listItem} onPress={handleSelectGroup}>
         <View style={styles.listItemView}>
           <Text>{title}</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleEditGroup(id)}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleEditGroup}>
         <View style={styles.listItemView}>
           <FontAwesome name="edit" size={20} color="dodgerblue" />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleDeleteGroup(id)}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleDeleteGroup}>
         <View style={styles.listItemView}>
           <FontAwesome name="remove" size={20} color="firebrick" />
         </View>

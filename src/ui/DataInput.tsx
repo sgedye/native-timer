@@ -4,18 +4,18 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Gap } from ".";
 
 interface DataInputProps {
-  time?: number | string;
+  time?: number;
   description?: string;
-  handleSetTime: (time: string) => void;
-  handleSetDescription: (description: string) => void;
+  // handleSetTime: (time: number) => void;
+  // handleSetDescription: (description: string) => void;
   handleDeleteRow: () => void;
 }
 
 export const DataInput: React.FC<DataInputProps> = ({
   time = 5,
   description,
-  handleSetTime,
-  handleSetDescription,
+  // handleSetTime,
+  // handleSetDescription,
   handleDeleteRow,
 }) => (
   <View style={styles.container}>
@@ -25,7 +25,7 @@ export const DataInput: React.FC<DataInputProps> = ({
           style={styles.input}
           placeholder="Time"
           value={`${time}`}
-          onChangeText={(time) => handleSetTime(time)}
+          // onChangeText={(time) => handleSetTime(Number(time))}
         ></TextInput>
       </View>
       <View style={styles.col65}>
@@ -33,7 +33,7 @@ export const DataInput: React.FC<DataInputProps> = ({
           style={styles.input}
           placeholder="Description"
           value={description}
-          onChangeText={(description) => handleSetDescription(description)}
+          // onChangeText={(description) => handleSetDescription(description)}
         ></TextInput>
       </View>
       <TouchableOpacity style={styles.col10} onPress={handleDeleteRow}>
