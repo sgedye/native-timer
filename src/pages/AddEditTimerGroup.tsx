@@ -38,6 +38,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   );
 
   const [timerGroup, setTimerGroup] = React.useState<TimerGroup | null>(null);
+  const [isListSaved, setListSaved] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!!data.length && routeId) {
@@ -57,9 +58,17 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     });
   }, [data, routeId]);
 
+  React.useEffect(() => {
+    if (isListSaved) {
+      return navigation.navigate("Admin");
+    }
+  }, [isListSaved]);
+
   if (!timerGroup) {
     return null;
   }
+
+  // Here timerGroup is always truthy, either edit with prefilled deets, or new with prefilled uuid.
 
   const setTitle = (title: string) => {
     setTimerGroup(
@@ -71,22 +80,15 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     );
   };
 
-  // const setTime = (id: string, time: number) => {
-  //   console.log("setTime...: ", time, id);
-  //   // Take an id and number and set the timer data event time.
-  // };
-
-  // const setDescription = (id: string, description: string) => {
-  //   const timerToUpdate = data.find((el) => el.id === id);
-  //   console.log(timerGroup);
-  //   console.log("timertoupdate", timerToUpdate);
-  //   // if (timerToUpdate) {
-  //   //   timerToUpdate.
-  //   // }
-  //   console.log("setDesc...", description, id);
-  //   // id: string, description: string
-  //   // Take an id and string and set the timer data event desc.
-  // };
+  const updateTimer = (timerId: string, time: number, desc: string) => {
+    const newTimers = timerGroup.timers.map((timer) => {
+      if (timer.timerId === timerId) {
+        return { ...timer, time, desc };
+      }
+      return timer;
+    });
+    setTimerGroup((prev) => ({ ...prev, timers: newTimers } as TimerGroup));
+  };
 
   const addDataRow = () => {
     const newId = uuid();
@@ -99,11 +101,8 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     );
     return (
       <DataInput
-        // handleSetTime={(time) => setTime(newId, time)}
-        // handleSetDescription={(description) =>
-        //   setDescription(newId, description)
-        // }
-        handleDeleteRow={() => deleteDataRow(newId)}
+        handleUpdateTimer={(time, desc) => updateTimer(newId, time, desc)}
+        handleDeleteTimer={() => deleteDataRow(newId)}
       />
     );
   };
@@ -129,10 +128,18 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       return;
     }
 
+    if (timerGroup.timers.some((timer) => !!timer.time === false)) {
+      console.log("please ensure all timers have a valid value (>0) for time");
+      return;
+    }
+
+    if (timerGroup.timers.some((timer) => timer.desc === "")) {
+      console.log("please ensure all timers have a valid description");
+      return;
+    }
+
     // All good -- save changes.
-    console.log(
-      "saving changes... naaaah, not really, well just groupName ATM :P"
-    );
+    console.log("All good -- saving changes.....");
 
     // Add new timerGroup - if timerGroupId not in data list.
     const isNewTimer = !data.find(
@@ -140,20 +147,24 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     );
 
     if (isNewTimer) {
-      return setData((prev) => [...prev, timerGroup]);
+      setData((prev) => [...prev, timerGroup]);
+      return setListSaved(true);
     }
 
     // Update existing
     const tempList = data.map((groupTimer) => {
       if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
-        return { ...groupTimer, timerGroupName: timerGroup.timerGroupName };
+        return {
+          ...groupTimer,
+          timerGroupName: timerGroup.timerGroupName,
+          timers: timerGroup.timers,
+        };
       }
       return groupTimer;
     });
-    return setData(tempList);
+    setData(tempList);
+    return setListSaved(true);
   };
-
-  // Here timerGroup is always truthy, either edit with prefilled deets, or new with prefilled uuid.
 
   return (
     <SafeAreaView style={styles.container}>
@@ -187,11 +198,10 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
               key={timerId}
               time={time}
               description={desc}
-              // handleSetTime={(time) => setTime(id, time)}
-              // handleSetDescription={(description) =>
-              //   setDescription(id, description)
-              // }
-              handleDeleteRow={() => deleteDataRow(timerId)}
+              handleUpdateTimer={(time, desc) =>
+                updateTimer(timerId, time, desc)
+              }
+              handleDeleteTimer={() => deleteDataRow(timerId)}
             />
           ))}
         </View>

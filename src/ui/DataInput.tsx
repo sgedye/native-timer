@@ -6,17 +6,15 @@ import { Gap } from ".";
 interface DataInputProps {
   time?: number;
   description?: string;
-  // handleSetTime: (time: number) => void;
-  // handleSetDescription: (description: string) => void;
-  handleDeleteRow: () => void;
+  handleUpdateTimer: (time: number, desc: string) => void;
+  handleDeleteTimer: () => void;
 }
 
 export const DataInput: React.FC<DataInputProps> = ({
   time = 5,
-  description,
-  // handleSetTime,
-  // handleSetDescription,
-  handleDeleteRow,
+  description = "",
+  handleUpdateTimer,
+  handleDeleteTimer,
 }) => (
   <View style={styles.container}>
     <View style={styles.row}>
@@ -25,7 +23,7 @@ export const DataInput: React.FC<DataInputProps> = ({
           style={styles.input}
           placeholder="Time"
           value={`${time}`}
-          // onChangeText={(time) => handleSetTime(Number(time))}
+          onChangeText={(time) => handleUpdateTimer(Number(time), description)}
         ></TextInput>
       </View>
       <View style={styles.col65}>
@@ -33,10 +31,10 @@ export const DataInput: React.FC<DataInputProps> = ({
           style={styles.input}
           placeholder="Description"
           value={description}
-          // onChangeText={(description) => handleSetDescription(description)}
+          onChangeText={(description) => handleUpdateTimer(time, description)}
         ></TextInput>
       </View>
-      <TouchableOpacity style={styles.col10} onPress={handleDeleteRow}>
+      <TouchableOpacity style={styles.col10} onPress={handleDeleteTimer}>
         <FontAwesome name="remove" size={20} color="firebrick" />
       </TouchableOpacity>
     </View>
