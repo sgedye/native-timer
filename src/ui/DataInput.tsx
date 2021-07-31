@@ -1,7 +1,6 @@
 import React from "react";
 import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { Gap } from ".";
 
 interface DataInputProps {
   time?: number;
@@ -23,7 +22,11 @@ export const DataInput: React.FC<DataInputProps> = ({
           style={styles.input}
           placeholder="Time"
           value={`${time}`}
-          onChangeText={(time) => handleUpdateTimer(Number(time), description)}
+          keyboardType="numeric"
+          onChangeText={(text) => {
+            let time = text.replace(/[^0-9]/g, "");
+            return handleUpdateTimer(Number(time.substring(0, 3)), description);
+          }}
         ></TextInput>
       </View>
       <View style={styles.col65}>
