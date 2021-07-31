@@ -10,17 +10,17 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
-import { AdminScreenProp, TimerGroup } from "../types";
+import Toast from "react-native-toast-message";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
+import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Gap, ListItem, Spacer } from "../ui";
 import { Footer } from "../components";
 
+import { AdminScreenProp, TimerGroup } from "../types";
 import seedData from "../data/data.json";
-import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
 interface AdminProps {
   route?: any;
@@ -50,14 +50,21 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
   };
 
   const deleteGroup = (groupId: string): void => {
-    setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
+    if (data.length > 1) {
+      setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "You must have at least one timer group.",
+      });
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ExpoStatusBar style="auto" />
       <View style={styles.header}>
-        <Text style={styles.headerText}>Select a new timer group</Text>
+        <Text style={styles.headerText}>Select Timer Group</Text>
       </View>
       <View style={styles.body}>
         <TouchableOpacity

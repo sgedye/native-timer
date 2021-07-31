@@ -10,15 +10,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { v4 as uuid } from "uuid";
+import { TextInput } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
+import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
-
-import { AddEditTimerGroupScreenProp, Timer, TimerGroup } from "../types";
-import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
-import { TextInput } from "react-native-gesture-handler";
-import { DataInput, Spacer } from "../ui";
 import { Footer } from "../components";
-import { FontAwesome } from "@expo/vector-icons";
+import { DataInput, Spacer } from "../ui";
+
+import { AddEditTimerGroupScreenProp, TimerGroup } from "../types";
 import seedData from "../data/data.json";
 
 interface AddEditTimerGroupProps {
@@ -54,7 +55,13 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     setTimerGroup({
       timerGroupId: uuid(),
       timerGroupName: "",
-      timers: [],
+      timers: [
+        {
+          timerId: "sg-default-timer-group-timer-id",
+          time: 5,
+          desc: "",
+        },
+      ],
     });
   }, [data, routeId]);
 
@@ -109,13 +116,20 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   };
 
   const deleteDataRow = (id: string) => {
-    setTimerGroup(
-      (prev) =>
-        ({
-          ...prev,
-          timers: prev?.timers.filter((el) => el.timerId !== id),
-        } as TimerGroup)
-    );
+    if (timerGroup.timers.length > 1) {
+      setTimerGroup(
+        (prev) =>
+          ({
+            ...prev,
+            timers: prev!.timers.filter((el) => el.timerId !== id),
+          } as TimerGroup)
+      );
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Timer groups must have at least 1 timer.",
+      });
+    }
   };
 
   const isNewTimerGroup = !data.find(
@@ -124,27 +138,25 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
   const persistChanges = () => {
     if (!timerGroup.timerGroupName) {
-      console.log("please enter a timerGroup name");
-      return;
-    }
-
-    if (!timerGroup.timers.length) {
-      console.log("please enter at least 1 timer to your timer group");
-      return;
+      return Toast.show({
+        type: "error",
+        text1: "Please enter a timer group name.",
+      });
     }
 
     if (timerGroup.timers.some((timer) => !!timer.time === false)) {
-      console.log("please ensure all timers have a valid value (>0) for time");
-      return;
+      return Toast.show({
+        type: "error",
+        text1: "All timers must have a valid duration.",
+      });
     }
 
     if (timerGroup.timers.some((timer) => timer.desc === "")) {
-      console.log("please ensure all timers have a valid description");
-      return;
+      return Toast.show({
+        type: "error",
+        text1: "All timers must have a valid description.",
+      });
     }
-
-    // All good -- save changes.
-    console.log("All good -- saving changes.....");
 
     // Add new timerGroup - if timerGroupId not in data list.
     if (isNewTimerGroup) {
@@ -189,10 +201,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
           <Spacer />
           <View style={styles.dataHeader}>
             <Text style={styles.label}>Timer Data:</Text>
-            <TouchableOpacity
-              style={styles.addData}
-              onPress={() => addDataRow()}
-            >
+            <TouchableOpacity style={styles.addData} onPress={addDataRow}>
               <FontAwesome name="plus" size={20} color="green" />
             </TouchableOpacity>
           </View>

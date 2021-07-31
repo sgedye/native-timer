@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { Home, Admin, AddEditTimerGroup } from "./src/pages";
 import { RootStackParamList } from "./src/types";
+import Toast from "react-native-toast-message";
 
 const { Navigator, Screen } = createStackNavigator<RootStackParamList>();
 
@@ -15,6 +16,7 @@ export default function App() {
         <Screen name="Admin" component={Admin} />
         <Screen name="AddEditTimerGroup" component={AddEditTimerGroup} />
       </Navigator>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>
   );
 }

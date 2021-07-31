@@ -1,7 +1,7 @@
 [
   {
-    "timerGroupId": "a",
-    "timerGroupName": "bursts",
+    "timerGroupId": "seed-data-timer-group-1",
+    "timerGroupName": "Punching Bag Workout",
     "timers": [
       {
         "timerId": "1",
@@ -52,48 +52,6 @@
         "timerId": "10",
         "time": 20,
         "desc": "Hook Cross Hook"
-      }
-    ]
-  },
-  {
-    "timerGroupId": "b",
-    "timerGroupName": "test",
-    "timers": [
-      {
-        "timerId": "11",
-        "time": 5,
-        "desc": "Get ready..."
-      },
-      {
-        "timerId": "12",
-        "time": 15,
-        "desc": "A"
-      },
-      {
-        "timerId": "13",
-        "time": 8,
-        "desc": "Rest"
-      },
-      {
-        "timerId": "14",
-        "time": 15,
-        "desc": "B"
-      }
-    ]
-  },
-  {
-    "timerGroupId": "c",
-    "timerGroupName": "abucus",
-    "timers": [
-      {
-        "timerId": "15",
-        "time": 5,
-        "desc": "Get ready..."
-      },
-      {
-        "timerId": "18",
-        "time": 21,
-        "desc": "12938723981273"
       }
     ]
   }
