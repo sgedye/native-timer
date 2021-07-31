@@ -58,6 +58,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     });
   }, [data, routeId]);
 
+  // Post new data back to admin, if list is saved.
   React.useEffect(() => {
     if (isListSaved) {
       return navigation.navigate("Admin", { data });
@@ -117,6 +118,10 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     );
   };
 
+  const isNewTimerGroup = !data.find(
+    ({ timerGroupId }) => timerGroupId === timerGroup.timerGroupId
+  );
+
   const persistChanges = () => {
     if (!timerGroup.timerGroupName) {
       console.log("please enter a timerGroup name");
@@ -142,11 +147,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     console.log("All good -- saving changes.....");
 
     // Add new timerGroup - if timerGroupId not in data list.
-    const isNewTimer = !data.find(
-      ({ timerGroupId }) => timerGroupId === timerGroup.timerGroupId
-    );
-
-    if (isNewTimer) {
+    if (isNewTimerGroup) {
       setData((prev) => [...prev, timerGroup]);
       return setListSaved(true);
     }
@@ -171,7 +172,9 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       <ExpoStatusBar style="auto" />
       <View style={styles.header}>
         <Text style={styles.headerText}>
-          Add/Edit {timerGroup.timerGroupName || "Timer Group"}
+          {isNewTimerGroup
+            ? "Add New Timer Group"
+            : `Edit ${timerGroup.timerGroupName}`}
         </Text>
       </View>
       <View style={styles.body}>

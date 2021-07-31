@@ -50,7 +50,6 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
   };
 
   const deleteGroup = (groupId: string): void => {
-    console.log(`Delete ID: ${groupId} selected`);
     setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
   };
 

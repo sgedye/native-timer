@@ -62,8 +62,8 @@ export const Home: React.FC<HomeProps> = ({ route }) => {
     );
   }
 
-  const handleComplete = (): void | [boolean, number] => {
-    let returnTuple;
+  const handleComplete = () => {
+    let returnTuple: [boolean, number] = [false, 0];
     setCounter((prev) => {
       if (prev < timerGroup.timers.length - 1) {
         playSound();
@@ -73,7 +73,6 @@ export const Home: React.FC<HomeProps> = ({ route }) => {
       } else {
         restart();
         playSound(true);
-        returnTuple = [false, 0];
         return 0;
       }
     });
