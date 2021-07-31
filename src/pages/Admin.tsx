@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { AdminScreenProp, Timer, TimerGroup } from "../types";
+import { AdminScreenProp, TimerGroup } from "../types";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -22,11 +22,17 @@ import { Footer } from "../components";
 import seedData from "../data/data.json";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 
-export const Admin: React.FC<Record<string, never>> = () => {
+interface AdminProps {
+  route?: any;
+}
+
+export const Admin: React.FC<AdminProps> = ({ route }) => {
+  const routeData: TimerGroup[] = route?.params?.data || seedData;
+
   const navigation = useNavigation<AdminScreenProp>();
   const [data, setData] = useAsyncStorage<TimerGroup[]>(
     "sg_timer_data",
-    seedData
+    routeData
   );
 
   const selectGroup = (groupId: string): void => {

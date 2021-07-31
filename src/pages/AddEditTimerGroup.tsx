@@ -60,7 +60,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
   React.useEffect(() => {
     if (isListSaved) {
-      return navigation.navigate("Admin");
+      return navigation.navigate("Admin", { data });
     }
   }, [isListSaved]);
 

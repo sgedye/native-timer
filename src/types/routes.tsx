@@ -3,7 +3,7 @@ import { TimerGroup } from "./baseTypes";
 
 export type RootStackParamList = {
   Home: { timerGroup: TimerGroup } | undefined;
-  Admin: undefined;
+  Admin: { data: TimerGroup[] } | undefined;
   AddEditTimerGroup: { groupId: string } | undefined;
 };
 
