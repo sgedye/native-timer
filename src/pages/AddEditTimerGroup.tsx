@@ -8,6 +8,8 @@ import {
   Platform,
   StatusBar,
   TouchableOpacity,
+  Dimensions,
+  FlatList,
 } from "react-native";
 import { v4 as uuid } from "uuid";
 import { TextInput } from "react-native-gesture-handler";
@@ -15,23 +17,25 @@ import Toast from "react-native-toast-message";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
+import { useNavigation } from "@react-navigation/native";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Footer } from "../components";
 import { DataInput, Spacer } from "../ui";
 
-import { AddEditTimerGroupScreenProp, TimerGroup } from "../types";
+import { AddEditTimerGroupScreenProp, TimerGroup, Timer } from "../types";
 import seedData from "../data/data.json";
 
 interface AddEditTimerGroupProps {
-  route: any;
-  navigation: AddEditTimerGroupScreenProp;
+  route?: any;
+  selectedTimerId: string;
 }
 
-export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
+export const AddEditTimerGroup = ({
   route,
-  navigation,
-}) => {
+  selectedTimerId,
+}: AddEditTimerGroupProps) => {
   const routeId: string = route?.params?.groupId;
+  const navigation = useNavigation<AddEditTimerGroupScreenProp>();
 
   const [data, setData] = useAsyncStorage<TimerGroup[]>(
     "sg_timer_data",
@@ -39,7 +43,6 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   );
 
   const [timerGroup, setTimerGroup] = React.useState<TimerGroup | null>(null);
-  const [isListSaved, setListSaved] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!!data.length && routeId) {
@@ -57,20 +60,13 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       timerGroupName: "",
       timers: [
         {
-          timerId: "sg-default-timer-group-timer-id",
+          timerId: uuid(),
           time: 5,
           desc: "",
         },
       ],
     });
   }, [data, routeId]);
-
-  // Post new data back to admin, if list is saved.
-  React.useEffect(() => {
-    if (isListSaved) {
-      return navigation.navigate("Admin", { data });
-    }
-  }, [isListSaved]);
 
   if (!timerGroup) {
     return null;
@@ -137,6 +133,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   );
 
   const persistChanges = () => {
+    // ERROR - No timer group name
     if (!timerGroup.timerGroupName) {
       return Toast.show({
         type: "error",
@@ -144,13 +141,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       });
     }
 
-    if (timerGroup.timers.some((timer) => !!timer.time === false)) {
-      return Toast.show({
-        type: "error",
-        text1: "All timers must have a valid duration.",
-      });
-    }
-
+    // ERROR - One or more timers have an invalid description
     if (timerGroup.timers.some((timer) => timer.desc === "")) {
       return Toast.show({
         type: "error",
@@ -158,13 +149,25 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       });
     }
 
-    // Add new timerGroup - if timerGroupId not in data list.
-    if (isNewTimerGroup) {
-      setData((prev) => [...prev, timerGroup]);
-      return setListSaved(true);
+    // ERROR - One or more timers have an invalid duration
+    if (timerGroup.timers.some((timer) => !!timer.time === false)) {
+      return Toast.show({
+        type: "error",
+        text1: "All timers must have a valid duration.",
+      });
     }
 
-    // Update existing
+    // SUCCESS - Add new timerGroup - if timerGroupId not in data list.
+    if (isNewTimerGroup) {
+      setData((prev) => [...prev, timerGroup]);
+      Toast.show({
+        type: "success",
+        text1: `${timerGroup.timerGroupName} has been successfully added.`,
+      });
+      return navigation.push("Admin", { data });
+    }
+
+    // SUCCESS - Update existing
     const tempList = data.map((groupTimer) => {
       if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
         return {
@@ -176,7 +179,11 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       return groupTimer;
     });
     setData(tempList);
-    return setListSaved(true);
+    Toast.show({
+      type: "success",
+      text1: `${timerGroup.timerGroupName} has been successfully updated.`,
+    });
+    return navigation.push("Admin", { data });
   };
 
   return (
@@ -190,38 +197,60 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
         </Text>
       </View>
       <View style={styles.body}>
-        <View style={styles.form}>
-          <Text style={styles.label}>Group Name:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(title) => setTitle(title)}
-            value={timerGroup.timerGroupName || ""}
-            placeholder="Timer group name"
-          />
-          <Spacer />
-          <View style={styles.dataHeader}>
-            <Text style={styles.label}>Timer Data:</Text>
-            <TouchableOpacity style={styles.addData} onPress={addDataRow}>
-              <FontAwesome name="plus" size={20} color="green" />
-            </TouchableOpacity>
-          </View>
-          {timerGroup.timers.map(({ timerId, time, desc }) => (
-            <DataInput
-              key={timerId}
-              time={time}
-              description={desc}
-              handleUpdateTimer={(time, desc) =>
-                updateTimer(timerId, time, desc)
-              }
-              handleDeleteTimer={() => deleteDataRow(timerId)}
-            />
-          ))}
-        </View>
-        <Spacer />
-        <Button title="Save Changes" onPress={persistChanges} />
+        <FlatList
+          ListHeaderComponent={
+            <>
+              <Text style={styles.label}>Group Name:</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={(title) => setTitle(title)}
+                value={timerGroup.timerGroupName || ""}
+                placeholder="Timer group name"
+              />
+              <Spacer />
+              <View style={styles.dataHeader}>
+                <Text style={styles.label}>Timer Data:</Text>
+                <TouchableOpacity style={styles.addData} onPress={addDataRow}>
+                  <FontAwesome name="plus" size={20} color="green" />
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          data={timerGroup.timers}
+          renderItem={({ item }) => {
+            const { timerId, time, desc } = item;
+            return (
+              <DataInput
+                key={timerId}
+                time={time}
+                description={desc}
+                handleUpdateTimer={(time, desc) =>
+                  updateTimer(timerId, time, desc)
+                }
+                handleDeleteTimer={() => deleteDataRow(timerId)}
+              />
+            );
+          }}
+          keyExtractor={(timer: Timer) => timer.timerId}
+          ListFooterComponent={
+            <>
+              <Spacer />
+              <Button
+                title="Save Changes"
+                onPress={persistChanges}
+                color="green"
+              />
+              <Spacer height={16} />
+            </>
+          }
+        />
       </View>
       <View style={styles.footer}>
-        <Footer />
+        <Footer
+          timerGroup={data.find(
+            ({ timerGroupId }) => timerGroupId === selectedTimerId
+          )}
+        />
       </View>
     </SafeAreaView>
   );
@@ -229,7 +258,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    minHeight: Dimensions.get("window").height,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -247,10 +276,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "dodgerblue",
     paddingTop: 8,
-  },
-  form: {
-    width: "90%",
-    marginHorizontal: "auto",
   },
   label: {
     fontSize: 18,

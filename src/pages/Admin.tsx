@@ -9,12 +9,14 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Gap, ListItem, Spacer } from "../ui";
 import { Footer } from "../components";
@@ -24,9 +26,15 @@ import seedData from "../data/data.json";
 
 interface AdminProps {
   route?: any;
+  selectedTimerId: string;
+  handleSetSelectedTimer: (id: string) => void;
 }
 
-export const Admin: React.FC<AdminProps> = ({ route }) => {
+export const Admin: React.FC<AdminProps> = ({
+  route,
+  selectedTimerId,
+  handleSetSelectedTimer,
+}) => {
   const routeData: TimerGroup[] = route?.params?.data || seedData;
 
   const navigation = useNavigation<AdminScreenProp>();
@@ -40,6 +48,10 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
       ({ timerGroupId }) => timerGroupId === groupId
     );
 
+    if (timerGroup?.timerGroupId) {
+      handleSetSelectedTimer(timerGroup.timerGroupId);
+    }
+
     return navigation.navigate("Home", timerGroup ? { timerGroup } : undefined);
   };
 
@@ -51,12 +63,53 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
 
   const deleteGroup = (groupId: string): void => {
     if (data.length > 1) {
+      if (groupId === selectedTimerId) {
+        handleSetSelectedTimer(seedData[0].timerGroupId);
+      }
       setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
     } else {
       Toast.show({
         type: "error",
         text1: "You must have at least one timer group.",
       });
+    }
+  };
+
+  const confirmDeleteAll = () => {
+    Alert.alert(
+      "Are you sure?",
+      "This will delete all timer data from your phone and reset it to the default values.",
+      [
+        {
+          text: "Cancel",
+        },
+        {
+          text: "Delete All",
+          onPress: clearStorage,
+        },
+      ],
+      {
+        cancelable: true,
+      }
+    );
+  };
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear().then(() => {
+        setData(seedData);
+        handleSetSelectedTimer(seedData[0].timerGroupId);
+        return Toast.show({
+          type: "success",
+          text1: "User data has been deleted",
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      Alert.alert(
+        "Oops, something went wrong",
+        "We are unable to clear storage at this time. Please try again later."
+      );
     }
   };
 
@@ -84,7 +137,9 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
           data={data}
           renderItem={({ item }) => (
             <ListItem
+              id={item.timerGroupId}
               title={item.timerGroupName}
+              isSelectedTimer={item.timerGroupId === selectedTimerId}
               handleSelectGroup={() => selectGroup(item.timerGroupId)}
               handleEditGroup={() => editGroup(item.timerGroupId)}
               handleDeleteGroup={() => deleteGroup(item.timerGroupId)}
@@ -92,9 +147,17 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
           )}
           keyExtractor={(item) => item.timerGroupId}
         />
+        <TouchableOpacity onPress={confirmDeleteAll} style={styles.addButton}>
+          <Text style={styles.clearStorageText}>Clear Storage</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.footer}>
-        <Footer />
+        <Footer
+          fromAdmin={true}
+          timerGroup={data.find(
+            ({ timerGroupId }) => timerGroupId === selectedTimerId
+          )}
+        />
       </View>
     </SafeAreaView>
   );
@@ -127,6 +190,10 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 28,
+    lineHeight: 50,
+  },
+  clearStorageText: {
+    fontSize: 22,
     lineHeight: 50,
   },
   footer: {

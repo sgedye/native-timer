@@ -2,10 +2,21 @@ import * as React from "react";
 import { Button, Gap } from "../ui";
 import { View, StyleSheet, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { FooterComponentProp } from "../types";
+import { FooterComponentProp, TimerGroup } from "../types";
 
-export const Footer: React.FC<Record<string, never>> = () => {
+interface FooterProps {
+  fromAdmin?: boolean;
+  timerGroup?: TimerGroup;
+}
+
+export const Footer = ({ timerGroup, fromAdmin }: FooterProps) => {
   const navigation = useNavigation<FooterComponentProp>();
+
+  const naviateHome = () =>
+    navigation.push("Home", timerGroup ? { timerGroup } : undefined);
+
+  const navigateBack = () => navigation.pop();
+
   return (
     <View
       style={{
@@ -14,12 +25,12 @@ export const Footer: React.FC<Record<string, never>> = () => {
         alignItems: "center",
       }}
     >
-      <Button
-        textContent="Home"
-        handlePress={() => navigation.navigate("Home")}
-      />
+      <Button textContent="Home" handlePress={naviateHome} />
       <Gap width={12} />
-      <Button handlePress={() => navigation.pop()} textContent="Back" />
+      <Button
+        textContent="Back"
+        handlePress={fromAdmin ? naviateHome : navigateBack}
+      />
     </View>
   );
 };
