@@ -25,7 +25,9 @@ export default function App() {
             />
           )}
         </Screen>
-        <Screen name="AddEditTimerGroup" component={AddEditTimerGroup} />
+        <Screen name="AddEditTimerGroup">
+          {() => <AddEditTimerGroup selectedTimerId={selectedTimerId} />}
+        </Screen>
       </Navigator>
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </NavigationContainer>

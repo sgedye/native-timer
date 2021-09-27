@@ -17,6 +17,7 @@ import Toast from "react-native-toast-message";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
+import { useNavigation } from "@react-navigation/native";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Footer } from "../components";
 import { DataInput, Spacer } from "../ui";
@@ -25,15 +26,16 @@ import { AddEditTimerGroupScreenProp, TimerGroup, Timer } from "../types";
 import seedData from "../data/data.json";
 
 interface AddEditTimerGroupProps {
-  route: any;
-  navigation: AddEditTimerGroupScreenProp;
+  route?: any;
+  selectedTimerId: string;
 }
 
-export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
+export const AddEditTimerGroup = ({
   route,
-  navigation,
-}) => {
+  selectedTimerId,
+}: AddEditTimerGroupProps) => {
   const routeId: string = route?.params?.groupId;
+  const navigation = useNavigation<AddEditTimerGroupScreenProp>();
 
   const [data, setData] = useAsyncStorage<TimerGroup[]>(
     "sg_timer_data",
@@ -244,7 +246,11 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
         />
       </View>
       <View style={styles.footer}>
-        <Footer />
+        <Footer
+          timerGroup={data.find(
+            ({ timerGroupId }) => timerGroupId === selectedTimerId
+          )}
+        />
       </View>
     </SafeAreaView>
   );

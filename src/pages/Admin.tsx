@@ -63,6 +63,9 @@ export const Admin: React.FC<AdminProps> = ({
 
   const deleteGroup = (groupId: string): void => {
     if (data.length > 1) {
+      if (groupId === selectedTimerId) {
+        handleSetSelectedTimer(seedData[0].timerGroupId);
+      }
       setData((prev) => prev.filter((group) => group.timerGroupId !== groupId));
     } else {
       Toast.show({
@@ -149,7 +152,12 @@ export const Admin: React.FC<AdminProps> = ({
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
-        <Footer />
+        <Footer
+          fromAdmin={true}
+          timerGroup={data.find(
+            ({ timerGroupId }) => timerGroupId === selectedTimerId
+          )}
+        />
       </View>
     </SafeAreaView>
   );
