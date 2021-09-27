@@ -9,12 +9,14 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Gap, ListItem, Spacer } from "../ui";
 import { Footer } from "../components";
@@ -60,6 +62,43 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
     }
   };
 
+  const confirmDeleteAll = () => {
+    Alert.alert(
+      "Are you sure?",
+      "This will delete all timer data from your phone.",
+      [
+        {
+          text: "Cancel",
+        },
+        {
+          text: "Delete All",
+          onPress: clearStorage,
+        },
+      ],
+      {
+        cancelable: true,
+      }
+    );
+  };
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear().then(() => {
+        setData((prev) =>
+          prev.filter(
+            (group) => group.timerGroupId === "seed-data-timer-group-0"
+          )
+        );
+      });
+    } catch (err) {
+      console.log(err);
+      Alert.alert(
+        "Oops, something went wrong",
+        "We are unable to clear storage at this time. Please try again later."
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ExpoStatusBar style="auto" />
@@ -92,6 +131,9 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
           )}
           keyExtractor={(item) => item.timerGroupId}
         />
+        <TouchableOpacity onPress={confirmDeleteAll} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Clear Storage</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.footer}>
         <Footer />
