@@ -41,7 +41,6 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   );
 
   const [timerGroup, setTimerGroup] = React.useState<TimerGroup | null>(null);
-  const [isListSaved, setListSaved] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!!data.length && routeId) {
@@ -66,13 +65,6 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       ],
     });
   }, [data, routeId]);
-
-  // Post new data back to admin, if list is saved.
-  React.useEffect(() => {
-    if (isListSaved) {
-      return navigation.navigate("Admin", { data });
-    }
-  }, [isListSaved]);
 
   if (!timerGroup) {
     return null;
@@ -139,6 +131,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
   );
 
   const persistChanges = () => {
+    // ERROR - No timer group name
     if (!timerGroup.timerGroupName) {
       return Toast.show({
         type: "error",
@@ -146,13 +139,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       });
     }
 
-    if (timerGroup.timers.some((timer) => !!timer.time === false)) {
-      return Toast.show({
-        type: "error",
-        text1: "All timers must have a valid duration.",
-      });
-    }
-
+    // ERROR - One or more timers have an invalid description
     if (timerGroup.timers.some((timer) => timer.desc === "")) {
       return Toast.show({
         type: "error",
@@ -160,17 +147,25 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       });
     }
 
-    // Add new timerGroup - if timerGroupId not in data list.
-    if (isNewTimerGroup) {
-      setData((prev) => [...prev, timerGroup]);
-      setListSaved(true);
+    // ERROR - One or more timers have an invalid duration
+    if (timerGroup.timers.some((timer) => !!timer.time === false)) {
       return Toast.show({
-        type: "success",
-        text1: `${timerGroup.timerGroupName} has been successfully added.`,
+        type: "error",
+        text1: "All timers must have a valid duration.",
       });
     }
 
-    // Update existing
+    // SUCCESS - Add new timerGroup - if timerGroupId not in data list.
+    if (isNewTimerGroup) {
+      setData((prev) => [...prev, timerGroup]);
+      Toast.show({
+        type: "success",
+        text1: `${timerGroup.timerGroupName} has been successfully added.`,
+      });
+      return navigation.push("Admin", { data });
+    }
+
+    // SUCCESS - Update existing
     const tempList = data.map((groupTimer) => {
       if (groupTimer.timerGroupId === timerGroup.timerGroupId) {
         return {
@@ -182,11 +177,11 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       return groupTimer;
     });
     setData(tempList);
-    setListSaved(true);
-    return Toast.show({
+    Toast.show({
       type: "success",
       text1: `${timerGroup.timerGroupName} has been successfully updated.`,
     });
+    return navigation.push("Admin", { data });
   };
 
   return (

@@ -95,6 +95,7 @@ export const Admin: React.FC<AdminProps> = ({
     try {
       await AsyncStorage.clear().then(() => {
         setData(seedData);
+        handleSetSelectedTimer(seedData[0].timerGroupId);
         return Toast.show({
           type: "success",
           text1: "User data has been deleted",
