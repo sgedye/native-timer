@@ -26,9 +26,15 @@ import seedData from "../data/data.json";
 
 interface AdminProps {
   route?: any;
+  selectedTimerId: string;
+  handleSetSelectedTimer: (id: string) => void;
 }
 
-export const Admin: React.FC<AdminProps> = ({ route }) => {
+export const Admin: React.FC<AdminProps> = ({
+  route,
+  selectedTimerId,
+  handleSetSelectedTimer,
+}) => {
   const routeData: TimerGroup[] = route?.params?.data || seedData;
 
   const navigation = useNavigation<AdminScreenProp>();
@@ -41,6 +47,10 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
     const timerGroup = data.find(
       ({ timerGroupId }) => timerGroupId === groupId
     );
+
+    if (timerGroup?.timerGroupId) {
+      handleSetSelectedTimer(timerGroup.timerGroupId);
+    }
 
     return navigation.navigate("Home", timerGroup ? { timerGroup } : undefined);
   };
@@ -84,11 +94,7 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
   const clearStorage = async () => {
     try {
       await AsyncStorage.clear().then(() => {
-        setData((prev) =>
-          prev.filter(
-            (group) => group.timerGroupId === "seed-data-timer-group-0"
-          )
-        );
+        setData(seedData);
         return Toast.show({
           type: "success",
           text1: "User data has been deleted",
@@ -129,6 +135,7 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
             <ListItem
               id={item.timerGroupId}
               title={item.timerGroupName}
+              isSelectedTimer={item.timerGroupId === selectedTimerId}
               handleSelectGroup={() => selectGroup(item.timerGroupId)}
               handleEditGroup={() => editGroup(item.timerGroupId)}
               handleDeleteGroup={() => deleteGroup(item.timerGroupId)}
@@ -137,7 +144,7 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
           keyExtractor={(item) => item.timerGroupId}
         />
         <TouchableOpacity onPress={confirmDeleteAll} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Clear Storage</Text>
+          <Text style={styles.clearStorageText}>Clear Storage</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
@@ -174,6 +181,10 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     fontSize: 28,
+    lineHeight: 50,
+  },
+  clearStorageText: {
+    fontSize: 22,
     lineHeight: 50,
   },
   footer: {

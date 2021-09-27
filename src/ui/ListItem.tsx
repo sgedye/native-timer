@@ -5,6 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 interface ListItemProps {
   id: string;
   title: string;
+  isSelectedTimer: boolean;
   handleSelectGroup: () => void;
   handleEditGroup: () => void;
   handleDeleteGroup: () => void;
@@ -13,6 +14,7 @@ interface ListItemProps {
 export const ListItem: React.FC<ListItemProps> = ({
   id,
   title,
+  isSelectedTimer,
   handleSelectGroup,
   handleEditGroup,
   handleDeleteGroup,
@@ -21,7 +23,13 @@ export const ListItem: React.FC<ListItemProps> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.listItem} onPress={handleSelectGroup}>
+      <TouchableOpacity
+        style={[
+          styles.listItem,
+          { backgroundColor: isSelectedTimer ? "lightgreen" : "lightgrey" },
+        ]}
+        onPress={handleSelectGroup}
+      >
         <View style={styles.listItemView}>
           <Text>{title}</Text>
         </View>
@@ -55,7 +63,6 @@ const styles = StyleSheet.create({
   listItem: {
     flexGrow: 1,
     padding: 15,
-    backgroundColor: "lightgrey",
     borderBottomColor: "grey",
     borderBottomWidth: 1,
   },
