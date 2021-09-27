@@ -58,7 +58,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       timerGroupName: "",
       timers: [
         {
-          timerId: "sg-default-timer-group-timer-id",
+          timerId: uuid(),
           time: 5,
           desc: "",
         },
