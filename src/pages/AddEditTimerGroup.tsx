@@ -9,6 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
   Dimensions,
+  FlatList,
 } from "react-native";
 import { v4 as uuid } from "uuid";
 import { TextInput } from "react-native-gesture-handler";
@@ -20,7 +21,7 @@ import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { Footer } from "../components";
 import { DataInput, Spacer } from "../ui";
 
-import { AddEditTimerGroupScreenProp, TimerGroup } from "../types";
+import { AddEditTimerGroupScreenProp, TimerGroup, Timer } from "../types";
 import seedData from "../data/data.json";
 
 interface AddEditTimerGroupProps {
@@ -199,35 +200,53 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
         </Text>
       </View>
       <View style={styles.body}>
-        <View style={styles.form}>
-          <Text style={styles.label}>Group Name:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(title) => setTitle(title)}
-            value={timerGroup.timerGroupName || ""}
-            placeholder="Timer group name"
-          />
-          <Spacer />
-          <View style={styles.dataHeader}>
-            <Text style={styles.label}>Timer Data:</Text>
-            <TouchableOpacity style={styles.addData} onPress={addDataRow}>
-              <FontAwesome name="plus" size={20} color="green" />
-            </TouchableOpacity>
-          </View>
-          {timerGroup.timers.map(({ timerId, time, desc }) => (
-            <DataInput
-              key={timerId}
-              time={time}
-              description={desc}
-              handleUpdateTimer={(time, desc) =>
-                updateTimer(timerId, time, desc)
-              }
-              handleDeleteTimer={() => deleteDataRow(timerId)}
-            />
-          ))}
-        </View>
-        <Spacer />
-        <Button title="Save Changes" onPress={persistChanges} />
+        <FlatList
+          ListHeaderComponent={
+            <>
+              <Text style={styles.label}>Group Name:</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={(title) => setTitle(title)}
+                value={timerGroup.timerGroupName || ""}
+                placeholder="Timer group name"
+              />
+              <Spacer />
+              <View style={styles.dataHeader}>
+                <Text style={styles.label}>Timer Data:</Text>
+                <TouchableOpacity style={styles.addData} onPress={addDataRow}>
+                  <FontAwesome name="plus" size={20} color="green" />
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          data={timerGroup.timers}
+          renderItem={({ item }) => {
+            const { timerId, time, desc } = item;
+            return (
+              <DataInput
+                key={timerId}
+                time={time}
+                description={desc}
+                handleUpdateTimer={(time, desc) =>
+                  updateTimer(timerId, time, desc)
+                }
+                handleDeleteTimer={() => deleteDataRow(timerId)}
+              />
+            );
+          }}
+          keyExtractor={(timer: Timer) => timer.timerId}
+          ListFooterComponent={
+            <>
+              <Spacer />
+              <Button
+                title="Save Changes"
+                onPress={persistChanges}
+                color="green"
+              />
+              <Spacer height={16} />
+            </>
+          }
+        />
       </View>
       <View style={styles.footer}>
         <Footer />
@@ -256,10 +275,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "dodgerblue",
     paddingTop: 8,
-  },
-  form: {
-    width: "90%",
-    marginHorizontal: "auto",
   },
   label: {
     fontSize: 18,

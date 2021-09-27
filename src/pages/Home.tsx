@@ -160,6 +160,7 @@ export const Home: React.FC<HomeProps> = ({ route }) => {
           <RNButton
             title="Go to Details"
             onPress={() => navigation.navigate("Admin")}
+            color="black"
           />
         )}
       </View>
@@ -170,6 +171,7 @@ export const Home: React.FC<HomeProps> = ({ route }) => {
               textContent={isPlaying ? "Pause" : "Play"}
               handlePress={playPause}
               btnSize="lg"
+              backgroundColor={isPlaying ? undefined : "darkgreen"}
             />
             <Gap width={12} />
             <Button handlePress={restart} textContent="Reset" btnSize="lg" />
@@ -216,12 +218,12 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   description: {
-    fontSize: 50,
+    fontSize: 40,
     fontWeight: "bold",
     textAlign: "center",
   },
   nextUp: {
-    fontSize: 30,
+    fontSize: 25,
     textAlign: "center",
   },
   button: {
