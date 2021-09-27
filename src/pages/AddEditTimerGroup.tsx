@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { v4 as uuid } from "uuid";
 import { TextInput } from "react-native-gesture-handler";
@@ -229,7 +230,7 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    minHeight: Dimensions.get("window").height,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
