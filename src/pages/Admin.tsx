@@ -65,7 +65,7 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
   const confirmDeleteAll = () => {
     Alert.alert(
       "Are you sure?",
-      "This will delete all timer data from your phone.",
+      "This will delete all timer data from your phone and reset it to the default values.",
       [
         {
           text: "Cancel",
@@ -89,6 +89,10 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
             (group) => group.timerGroupId === "seed-data-timer-group-0"
           )
         );
+        return Toast.show({
+          type: "success",
+          text1: "User data has been deleted",
+        });
       });
     } catch (err) {
       console.log(err);
@@ -123,6 +127,7 @@ export const Admin: React.FC<AdminProps> = ({ route }) => {
           data={data}
           renderItem={({ item }) => (
             <ListItem
+              id={item.timerGroupId}
               title={item.timerGroupName}
               handleSelectGroup={() => selectGroup(item.timerGroupId)}
               handleEditGroup={() => editGroup(item.timerGroupId)}

@@ -162,7 +162,11 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
     // Add new timerGroup - if timerGroupId not in data list.
     if (isNewTimerGroup) {
       setData((prev) => [...prev, timerGroup]);
-      return setListSaved(true);
+      setListSaved(true);
+      return Toast.show({
+        type: "success",
+        text1: `${timerGroup.timerGroupName} has been successfully added.`,
+      });
     }
 
     // Update existing
@@ -177,7 +181,11 @@ export const AddEditTimerGroup: React.FC<AddEditTimerGroupProps> = ({
       return groupTimer;
     });
     setData(tempList);
-    return setListSaved(true);
+    setListSaved(true);
+    return Toast.show({
+      type: "success",
+      text1: `${timerGroup.timerGroupName} has been successfully updated.`,
+    });
   };
 
   return (

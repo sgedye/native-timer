@@ -47,7 +47,9 @@ export const Home: React.FC<HomeProps> = ({ route }) => {
   //     : undefined;
   // }, [sound]);
 
+  // Note, this should not hit.
   if (!timerGroup?.timers.length) {
+    console.log("ERROR - timerGroup is null, or doesn't contain any timers");
     return (
       <>
         <Text>
